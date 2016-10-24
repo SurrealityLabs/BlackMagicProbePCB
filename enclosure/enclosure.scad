@@ -1,17 +1,17 @@
 delta = 0.01;
 
-wall_thickness = 4;
+wall_thickness = 3;
 board_width = 50;
 board_depth = 50;
-board_thickness = 1.6;
-usb_height = 3;
+board_thickness = 1.2;
 corner_radius = 3;
 
 under_board_height = 5;
-above_board_height = 7;
+above_board_height = 4.5;
 
-lip_height = 1;
+lip_height = board_thickness;
 lip_width = (wall_thickness / 2) - delta;
+lip_slop = 0.15;
 
 overall_width = board_width + (wall_thickness * 2);
 overall_depth = board_depth + (wall_thickness * 2);
@@ -32,25 +32,25 @@ board_support_dimensions_top = [board_support_width, board_support_width, top_ca
 num_holes = 4;
 hole_locations = [[-19.05, -19.05, 0], [19.05, 19.05, 0], [-19.05, 19.05, 0], [19.05, -19.05, 0]];
 
-usb_port_width = 13;
-usb_port_height = 11;
+usb_port_width = 11;
+usb_port_height = 9;
 usb_port_radius = 2;
 usb_port_z_offset = 1.5;
 
-uart_port_width = 4.5;
-uart_port_depth = 17.25;
+uart_port_width = 3.5;
+uart_port_depth = 16.25;
 uart_port_center = [20.32, 0, 0];
 
-st_link_port_width = 4.5;
-st_link_port_depth = 17.25;
+st_link_port_width = 3.9;
+st_link_port_depth = 16.25;
 st_link_port_center = [-17.78, 3.81, 0];
 
-lpc_link_port_width = 4.5;
-lpc_link_port_depth = 24.85;
+lpc_link_port_width = 3.9;
+lpc_link_port_depth = 23.85;
 lpc_link_port_center = [-21.59, 0, 0];
 
-jtag_port_width = 33;
-jtag_port_depth = 8.5;
+jtag_port_width = 33.5;
+jtag_port_depth = 9;
 jtag_port_center = [0, -10.16, 0];
 
 swd_port_width = 13;
@@ -78,9 +78,9 @@ module top_shell() {
             }
             
             // lip
-            translate([0, 0, lip_height - delta]) difference() {
-                miniroundcyl([overall_width, overall_depth, lip_height * 2], corner_radius);
-                miniroundcyl([overall_width-(lip_width * 2), overall_depth-(lip_width * 2), lip_height * 2 + 2* delta], corner_radius * .95);
+            translate([0, 0, lip_height/2 - delta]) difference() {
+                miniroundcyl([overall_width, overall_depth, lip_height + 35*delta], corner_radius);
+                miniroundcyl([overall_width-(lip_width * 2), overall_depth-(lip_width * 2), lip_height + 37* delta], corner_radius * .95);
             }
         }
         
@@ -94,7 +94,7 @@ module top_shell() {
         }
         
         // USB port
-        translate([0, overall_depth / 2, -usb_port_z_offset]) rotate([90,0,0]) miniroundcyl([usb_port_width, usb_port_height, overall_depth], usb_port_radius);
+        translate([0, overall_depth / 1.25, -usb_port_z_offset]) rotate([90,0,0]) miniroundcyl([usb_port_width, usb_port_height, overall_depth], usb_port_radius);
         
         // UART port
         translate(uart_port_center + [0, 0, -(top_height/2) - delta]) cube([uart_port_width, uart_port_depth, top_height], center=true);
@@ -138,7 +138,7 @@ module bottom_shell() {
         // lip
         difference() {
             miniroundcyl([overall_width+delta, overall_depth+delta, lip_height * 2], corner_radius);
-            miniroundcyl([overall_width-(lip_width * 2), overall_depth-(lip_width * 2), lip_height * 2], corner_radius * .95);
+            miniroundcyl([overall_width-((lip_width + lip_slop) * 2), overall_depth-((lip_width + lip_slop) * 2), lip_height * 2], corner_radius * .95);
         }
         
         // screw holes with nut traps
